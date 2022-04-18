@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WStoreDataManagement", "WSt
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WStoreData", "WStoreData\WStoreData.sqlproj", "{093C31F8-620F-4E08-9564-A662AE604BFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WStoreWPFUserInterface", "WStoreWPFUserInterface\WStoreWPFUserInterface.csproj", "{457C791C-3D68-427F-B553-A3D50290AB76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{093C31F8-620F-4E08-9564-A662AE604BFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{093C31F8-620F-4E08-9564-A662AE604BFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{093C31F8-620F-4E08-9564-A662AE604BFB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{457C791C-3D68-427F-B553-A3D50290AB76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{457C791C-3D68-427F-B553-A3D50290AB76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{457C791C-3D68-427F-B553-A3D50290AB76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{457C791C-3D68-427F-B553-A3D50290AB76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
