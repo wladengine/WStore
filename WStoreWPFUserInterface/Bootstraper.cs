@@ -12,9 +12,36 @@ namespace WStoreWPFUserInterface
     //this is the class, where we will setup Caliburn.Micro
     public class Bootstraper : BootstrapperBase
     {
+        private SimpleContainer _container = new SimpleContainer();
+
         public Bootstraper()
         {
             Initialize();
+        }
+
+        protected override void Configure()
+        {
+            //when everyone asks for the container, we will return the instance of out _container
+            _container.Instance(_container);
+
+            //it's kind of little bit meta
+            // container holds an instance of itself to pass out, when people ask for SimpleContainer
+            // the reason for that is because we may want to get this container in order to manipulate something or change something
+            // or get information out of besides from our constructor
+
+            //now we create a pair of important singletones for simplification our work and feel a power of Caliber.Micro
+            _container
+                .Singleton<IWindowManager, WindowManager>()
+                .Singleton<IEventAggregator, EventAggregator>(); //EventAggregator is a helpful thing to aggregate every event in application
+                                                                 //one central clearinghouse looks a good thing to connect every module by "event bus"
+
+
+            // use an reflection to automatize the registration of every new View and ViewModel
+            GetType().Assembly.GetTypes() //for every type in our entire application
+                .Where(type => type.IsClass)
+                .Where(type => type.Name.EndsWith("ViewModel"))
+                .ToList()
+                .ForEach(viewModelType => _container.RegisterPerRequest(viewModelType, viewModelType.ToString(), viewModelType));
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
@@ -34,6 +61,22 @@ namespace WStoreWPFUserInterface
             //        </ ResourceDictionary.MergedDictionaries>
             //    </ ResourceDictionary>
             //</ Application.Resources>
+        }
+
+        protected override object GetInstance(Type service, string key)
+        {
+            return _container.GetInstance(service, key);
+            //that means, that a Caliburn.Micro (and it's dependency injection container) will get information about asked instances from the container
+        }
+
+        protected override IEnumerable<object> GetAllInstances(Type service)
+        {
+            return _container.GetAllInstances(service);
+        }
+
+        protected override void BuildUp(object instance)
+        {
+            _container.BuildUp(instance);
         }
     }
 }
