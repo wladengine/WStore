@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using WStoreWPFUserInterface.Helpers;
 using WStoreWPFUserInterface.ViewModels;
 
 namespace WStoreWPFUserInterface
@@ -17,6 +19,13 @@ namespace WStoreWPFUserInterface
         public Bootstraper()
         {
             Initialize();
+
+            // some hack for visibility of passwordbox text changing
+            // https://stackoverflow.com/questions/30631522/caliburn-micro-support-for-passwordbox
+            ConventionManager.AddElementConvention<PasswordBox>(
+                Helpers.PasswordBoxHelper.BoundPasswordProperty,
+                "Password",
+                "PasswordChanged");
         }
 
         protected override void Configure()
@@ -32,8 +41,9 @@ namespace WStoreWPFUserInterface
             //now we create a pair of important singletones for simplification our work and feel a power of Caliber.Micro
             _container
                 .Singleton<IWindowManager, WindowManager>()
-                .Singleton<IEventAggregator, EventAggregator>(); //EventAggregator is a helpful thing to aggregate every event in application
-                                                                 //one central clearinghouse looks a good thing to connect every module by "event bus"
+                .Singleton<IEventAggregator, EventAggregator>() //EventAggregator is a helpful thing to aggregate every event in application
+                                                                //one central clearinghouse looks a good thing to connect every module by "event bus"
+                .Singleton<IAPIHelper, APIHelper>(); 
 
 
             // use an reflection to automatize the registration of every new View and ViewModel
