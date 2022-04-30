@@ -56,15 +56,45 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
+        private string _errorMessage;
+        
+        public bool IsErrorVisible
+        {
+            get 
+            {
+                bool output = false;
+
+                if (ErrorMessage?.Length > 0)
+                {
+                    output = true;
+                }
+
+                return output;
+            }
+        }
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set 
+            { 
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => ErrorMessage);
+                NotifyOfPropertyChange(() => IsErrorVisible);//dont forget to notify dependent properties
+            }
+        }
+
+
+
         public async Task LogIn()
         {
             try
             {
                 var result = await _apiHelper.AuthenticateAsync(UserName, Password);
+                ErrorMessage = String.Empty;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorMessage =  ex.Message;
             }
         }
     }
