@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Caliburn.Micro;
 using WStoreWPFUserInterface.Helpers;
+using WStoreWPFUserInterface.Library.Api;
 
 namespace WStoreWPFUserInterface.ViewModels
 {
@@ -83,14 +84,15 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
-
-
         public async Task LogIn()
         {
             try
             {
                 var result = await _apiHelper.AuthenticateAsync(UserName, Password);
                 ErrorMessage = String.Empty;
+
+                // get more information about user
+                await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
             }
             catch (Exception ex)
             {
