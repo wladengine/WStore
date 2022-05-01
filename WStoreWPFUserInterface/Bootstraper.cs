@@ -33,7 +33,8 @@ namespace WStoreWPFUserInterface
         protected override void Configure()
         {
             //when everyone asks for the container, we will return the instance of out _container
-            _container.Instance(_container);
+            _container.Instance(_container)
+                .PerRequest<IProductEndpoint, ProductEndpoint>(); // DI will create a new instance of implementing class at every request (not a singleton)
 
             //it's kind of little bit meta
             // container holds an instance of itself to pass out, when people ask for SimpleContainer
