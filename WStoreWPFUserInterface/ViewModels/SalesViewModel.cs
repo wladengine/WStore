@@ -43,9 +43,23 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
-        private BindingList<string> _cart;
+        private ProductModel _selectedProduct;
 
-        public BindingList<string> Cart
+        public ProductModel SelectedProduct
+        {
+            get { return _selectedProduct; }
+            set 
+            { 
+                _selectedProduct = value;
+                NotifyOfPropertyChange(() => SelectedProduct);
+                NotifyOfPropertyChange(() => CanAddToCart);
+            }
+        }
+
+
+        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+
+        public BindingList<CartItemModel> Cart
         {
             get { return _cart; }
             set
@@ -55,7 +69,7 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
-        private int _itemQuantity;
+        private int _itemQuantity = 1;
 
         public int ItemQuantity
         {
@@ -64,6 +78,7 @@ namespace WStoreWPFUserInterface.ViewModels
             { 
                 _itemQuantity = value; 
                 NotifyOfPropertyChange(() => ItemQuantity);
+                NotifyOfPropertyChange(() => CanAddToCart);
             }
         }
 
@@ -72,7 +87,12 @@ namespace WStoreWPFUserInterface.ViewModels
             get
             {
                 //TODO: make a calculation
-                return "";
+                decimal subTotal = 0;
+                foreach (var item in _cart)
+                {
+                    subTotal += item.Product.RetailPrice * item.QuantityInCart;
+                }
+                return $"{subTotal:C}";
             }
         }
         public string Tax
@@ -100,7 +120,7 @@ namespace WStoreWPFUserInterface.ViewModels
                 //TODO: make sure that smth is selected
                 //TODO: make sure that is an item quantity
 
-                if (_itemQuantity > 0)
+                if (ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity)
                     output = true;
 
                 return output;
@@ -109,7 +129,33 @@ namespace WStoreWPFUserInterface.ViewModels
         }
         public void AddToCart()
         {
-            
+            CartItemModel existingItem = Cart
+                .FirstOrDefault(x => x.Product?.Id == SelectedProduct?.Id);
+
+            if (existingItem != null)
+            {
+                existingItem.QuantityInCart += ItemQuantity;
+
+                // TODO: try to find some better solution to update displaying text
+                Cart.Remove(existingItem);
+                Cart.Add(existingItem);
+            }
+            else
+            {
+                Cart.Add(new CartItemModel()
+                {
+                    Product = SelectedProduct,
+                    QuantityInCart = ItemQuantity,
+                });
+            }
+
+            // Do not forget to decrement QuantityInStock
+            SelectedProduct.QuantityInStock -= ItemQuantity;
+            ItemQuantity = 1;
+
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanRemoveFromCart
@@ -126,7 +172,9 @@ namespace WStoreWPFUserInterface.ViewModels
         }
         public void RemoveFromCart()
         {
-
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanCheckOut

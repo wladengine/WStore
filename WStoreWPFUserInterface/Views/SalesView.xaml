@@ -36,7 +36,7 @@
         <TextBlock Text="Items" Grid.Row="1" Grid.Column="0" />
         <ListBox Grid.Row="2" Grid.Column="0"
                  MinHeight="200" MinWidth="150"
-                 x:Name="Products">
+                 x:Name="Products" SelectedItem="{Binding SelectedProduct}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding ProductName}" FontSize="16" />
@@ -60,7 +60,12 @@
         <TextBlock Text="Cart" Grid.Row="1" Grid.Column="2" />
         <ListBox Grid.Row="2" Grid.Column="2"
                  MinHeight="200" MinWidth="150"
-                 x:Name="Card">
+                 x:Name="Cart">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayText}" FontSize="16" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
         <DockPanel Grid.Column="2" Grid.Row="3" >
