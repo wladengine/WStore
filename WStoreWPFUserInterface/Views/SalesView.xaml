@@ -37,6 +37,11 @@
         <ListBox Grid.Row="2" Grid.Column="0"
                  MinHeight="200" MinWidth="150"
                  x:Name="Products">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding ProductName}" FontSize="16" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
         <!-- Column 1 -->

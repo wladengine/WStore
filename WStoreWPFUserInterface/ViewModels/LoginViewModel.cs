@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Caliburn.Micro;
+using WStoreWPFUserInterface.EventModels;
 using WStoreWPFUserInterface.Helpers;
 using WStoreWPFUserInterface.Library.Api;
 
@@ -16,10 +17,12 @@ namespace WStoreWPFUserInterface.ViewModels
         private string _password;
 
         private IAPIHelper _apiHelper;
+        private IEventAggregator _events;
 
-        public LoginViewModel(IAPIHelper apiHelper)
+        public LoginViewModel(IAPIHelper apiHelper, IEventAggregator events)
         {
             _apiHelper = apiHelper;
+            _events = events;
         }
 
         public string UserName
@@ -93,6 +96,9 @@ namespace WStoreWPFUserInterface.ViewModels
 
                 // get more information about user
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
+
+                // raise the event specially in UI thread (for to be sure, that every UI listener can hear this event)
+                await _events.PublishOnUIThreadAsync(new LogOnEvent());
             }
             catch (Exception ex)
             {
