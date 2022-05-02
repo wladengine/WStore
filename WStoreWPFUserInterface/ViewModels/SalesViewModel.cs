@@ -97,11 +97,8 @@ namespace WStoreWPFUserInterface.ViewModels
 
         private decimal CalculateSubTotal()
         {
-            decimal subTotal = 0;
-            foreach (var item in _cart)
-            {
-                subTotal += item.Product.RetailPrice * item.QuantityInCart;
-            }
+            decimal subTotal = Cart
+                .Sum(item => item.Product.RetailPrice * item.QuantityInCart);
 
             return subTotal;
         }
@@ -116,17 +113,11 @@ namespace WStoreWPFUserInterface.ViewModels
         }
         private decimal CalculateTaxAmount()
         {
-            decimal taxAmount = 0;
             decimal taxRate = _configHelper.GetTaxRate();
 
-            foreach (var item in _cart)
-            {
-                if (item.Product.IsTaxable)
-                {
-                    // TODO: think about rounding (and about place of rounding) of calculated taxes
-                    taxAmount += item.Product.RetailPrice * item.QuantityInCart * taxRate;
-                }
-            }
+            decimal taxAmount = Cart
+                .Where(item => item.Product.IsTaxable)
+                .Sum(item => item.Product.RetailPrice * item.QuantityInCart * taxRate);
 
             return taxAmount;
         }
