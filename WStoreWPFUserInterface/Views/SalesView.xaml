@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:WStoreWPFUserInterface.Views"
              mc:Ignorable="d" 
              Background="Wheat"
              d:DesignHeight="425" d:DesignWidth="800"
@@ -39,7 +38,19 @@
                  x:Name="Products" SelectedItem="{Binding SelectedProduct}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding ProductName}" FontSize="16" />
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding ProductName}" FontSize="16" />
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Price: " FontSize="14" />
+                                <TextBlock Text="{Binding ConvertedRetailPrice}" FontSize="14" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="5 0 0 0">
+                                <TextBlock Text="In stock: " FontSize="14" />
+                                <TextBlock Text="{Binding QuantityInStock}" FontSize="14" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -63,7 +74,10 @@
                  x:Name="Cart">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding DisplayText}" FontSize="16" />
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding DisplayText}" FontSize="16" />
+                    </StackPanel>
+                        
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

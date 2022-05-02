@@ -12,6 +12,14 @@ namespace WStoreWPFUserInterface.Library.Models
         public string ProductName { get; set; }
         public string Description { get; set; }
         public decimal RetailPrice { get; set; }
+        public string ConvertedRetailPrice
+        {
+            get 
+            {
+                // currency in current client culture
+                return RetailPrice.ToString("C", System.Globalization.CultureInfo.CurrentCulture);
+            }
+        }
         public int QuantityInStock { get; set; }
         public bool IsTaxable { get; set; }
     }
