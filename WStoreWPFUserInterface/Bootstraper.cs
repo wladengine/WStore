@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using WStoreWPFUserInterface.Helpers;
 using WStoreWPFUserInterface.Library.Api;
+using WStoreWPFUserInterface.Library.Helpers;
 using WStoreWPFUserInterface.Library.Models;
 using WStoreWPFUserInterface.ViewModels;
 
@@ -47,6 +48,7 @@ namespace WStoreWPFUserInterface
                 .Singleton<IEventAggregator, EventAggregator>() //EventAggregator is a helpful thing to aggregate every event in application
                                                                 //one central clearinghouse looks a good thing to connect every module by "event bus"
                 .Singleton<IAPIHelper, APIHelper>()
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<ILoggedInUserModel, LoggedInUserModel>();  // we can also just register a singleton for future use
 
 

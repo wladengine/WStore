@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WStoreWPFUserInterface.Library.Api;
+using WStoreWPFUserInterface.Library.Helpers;
 using WStoreWPFUserInterface.Library.Models;
 
 namespace WStoreWPFUserInterface.ViewModels
@@ -13,9 +14,12 @@ namespace WStoreWPFUserInterface.ViewModels
     public class SalesViewModel : Screen
     {
         private IProductEndpoint _productEndpoint;
-        public SalesViewModel(IProductEndpoint productEndpoint)
+        private IConfigHelper _configHelper;
+
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
         {
             _productEndpoint = productEndpoint;
+            _configHelper = configHelper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -86,29 +90,53 @@ namespace WStoreWPFUserInterface.ViewModels
         { 
             get
             {
-                //TODO: make a calculation
-                decimal subTotal = 0;
-                foreach (var item in _cart)
-                {
-                    subTotal += item.Product.RetailPrice * item.QuantityInCart;
-                }
+                decimal subTotal = CalculateSubTotal();
                 return $"{subTotal:C}";
             }
         }
+
+        private decimal CalculateSubTotal()
+        {
+            decimal subTotal = 0;
+            foreach (var item in _cart)
+            {
+                subTotal += item.Product.RetailPrice * item.QuantityInCart;
+            }
+
+            return subTotal;
+        }
+
         public string Tax
         {
             get
             {
-                //TODO: make a calculation
-                return "";
+                decimal taxAmount = CalculateTaxAmount();
+                return $"{taxAmount:C}";
             }
         }
+        private decimal CalculateTaxAmount()
+        {
+            decimal taxAmount = 0;
+            decimal taxRate = _configHelper.GetTaxRate();
+
+            foreach (var item in _cart)
+            {
+                if (item.Product.IsTaxable)
+                {
+                    // TODO: think about rounding (and about place of rounding) of calculated taxes
+                    taxAmount += item.Product.RetailPrice * item.QuantityInCart * taxRate;
+                }
+            }
+
+            return taxAmount;
+        }
+
         public string Total
         {
             get
             {
-                //TODO: make a calculation
-                return "";
+                decimal Total = CalculateSubTotal() + CalculateTaxAmount();
+                return $"{Total:C}";
             }
         }
 
