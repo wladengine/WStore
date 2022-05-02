@@ -21,7 +21,7 @@ namespace WStoreDataManagement.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("AspNetDataManagement", throwIfV1Schema: false)
         {
         }
         
