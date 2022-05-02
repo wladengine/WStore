@@ -138,7 +138,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="App.Debug.config">
+        <DependentUpon>App.config</DependentUpon>
+    </None>
+	<None Include="App.Release.config">
+        <DependentUpon>App.config</DependentUpon>
+    </None>
   </ItemGroup>
+  <Target Name="SetAppConfig" BeforeTargets="Compile">
+	<Copy SourceFiles="App.Debug.config" DestinationFiles="App.config" OverwriteReadOnlyFiles="true" Condition=" '$(Configuration)' == 'Debug' " />
+	<Copy SourceFiles="App.Release.config" DestinationFiles="App.config" OverwriteReadOnlyFiles="true" Condition=" '$(Configuration)' == 'Release' " />
+  </Target>
   <ItemGroup>
     <ProjectReference Include="..\WStoreWPFUserInterface.Library\WStoreWPFUserInterface.Library.csproj">
       <Project>{cf2feb15-400f-416f-9a2d-c17277f5d1f1}</Project>

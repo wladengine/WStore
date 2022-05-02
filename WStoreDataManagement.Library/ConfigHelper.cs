@@ -5,19 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WStoreWPFUserInterface.Library.Helpers
+namespace WStoreDataManagement.Library
 {
-    public class ConfigHelper : IConfigHelper
+    public class ConfigHelper
     {
-        //TODO: consider to move code into API layer
-        public decimal GetTaxRate()
+        public static decimal GetTaxRate()
         {
             string taxRateText = ConfigurationManager.AppSettings["taxRate"];
 
             if (string.IsNullOrEmpty(taxRateText))
                 throw new ConfigurationErrorsException("Tax rate is not set up");
 
-            if (decimal.TryParse(taxRateText.Replace(',', '.'), System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture, 
+            if (decimal.TryParse(taxRateText.Replace(',', '.'), System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture,
                 out decimal output) == false)
                 throw new ConfigurationErrorsException("Tax rate is not set up properly");
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace WStoreWPFUserInterface.ViewModels
         {
             _apiHelper = apiHelper;
             _events = events;
+
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["userName"]))
+                UserName = ConfigurationManager.AppSettings["userName"];
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["password"]))
+                Password = ConfigurationManager.AppSettings["password"];
         }
 
         public string UserName

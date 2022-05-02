@@ -19,5 +19,16 @@ namespace WStoreDataManagement.Library.DataAccess
 
             return output;
         }
+
+        public ProductModel GetProductById(int productId)
+        {
+            //TODO: create a dependency injection against theese direct dependencies
+            SQLDataAccess sql = new SQLDataAccess();
+
+            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "WStoreData")
+                .FirstOrDefault();
+
+            return output;
+        }
     }
 }
