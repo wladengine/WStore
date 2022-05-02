@@ -16,20 +16,19 @@ namespace WStoreWPFUserInterface.ViewModels
         private readonly SalesViewModel _salesVM;
 
         private readonly IEventAggregator _events;
-        private readonly SimpleContainer _container;
 
-        public ShellViewModel(IEventAggregator events, SimpleContainer container, 
-            SalesViewModel salesVM)
+        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM)
         {
             _salesVM = salesVM;
 
-            _container = container;
-
             _events = events;
             _events.SubscribeOnUIThread(this); // activate the subscription in UI thread
+        }
 
-            var t = ActivateItemAsync(_container.GetInstance<LoginViewModel>()); 
-            t.Wait();
+        protected override async void OnViewLoaded(object view)
+        {
+            await ActivateItemAsync(IoC.Get<LoginViewModel>()); // Use the default IoC container in Caliburn.Micro
+
             // Wow, whats happened? The view is displayed just without any direct creation of ViewModel!
             // Thats because we created the connection in Bootstrapper.cs, where any ViewModel will be registered in Caliburn.Micro
             // and after any call will be generated automatically.
