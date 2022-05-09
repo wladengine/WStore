@@ -57,7 +57,6 @@ namespace WStoreWPFUserInterface.ViewModels
         }
 
         private ProductDisplayModel _selectedProduct;
-
         public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
@@ -82,8 +81,19 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
-        private int _itemQuantity = 1;
+        private CartItemDisplayModel _selectedCartItem;
+        public CartItemDisplayModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set
+            {
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedCartItem);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
+            }
+        }
 
+        private int _itemQuantity = 1;
         public int ItemQuantity
         {
             get { return _itemQuantity; }
@@ -194,12 +204,24 @@ namespace WStoreWPFUserInterface.ViewModels
                 bool output = false;
 
                 //TODO: make sure that smth is selected
+                if (SelectedCartItem != null)
+                    output = true;
 
                 return output;
             }
         }
         public void RemoveFromCart()
         {
+            SelectedCartItem.Product.QuantityInStock += 1;
+            if (SelectedCartItem.QuantityInCart > 1)
+            {
+                SelectedCartItem.QuantityInCart -= 1;
+            }
+            else
+            {
+                Cart.Remove(SelectedCartItem);
+            }
+
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
