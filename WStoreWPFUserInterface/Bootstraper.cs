@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using WStoreWPFUserInterface.Helpers;
 using WStoreWPFUserInterface.Library.Api;
 using WStoreWPFUserInterface.Library.Helpers;
 using WStoreWPFUserInterface.Library.Models;
+using WStoreWPFUserInterface.Models;
 using WStoreWPFUserInterface.ViewModels;
 
 namespace WStoreWPFUserInterface
@@ -31,9 +33,25 @@ namespace WStoreWPFUserInterface
                 "PasswordChanged");
         }
 
+        private IMapper ConfigureAutomapper()
+        {
+            var automapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductModel, ProductDisplayModel>();
+                cfg.CreateMap<CartItemModel, CartItemDisplayModel>();
+            });
+            //At the start we will make some reflection works, but after that, he works fast
+
+            var mapper = automapperConfiguration.CreateMapper();
+            return mapper;
+        }
+
         protected override void Configure()
         {
-            //when everyone asks for the container, we will return the instance of out _container
+            //configure AutoMapper
+            _container.Instance(ConfigureAutomapper());//when everyone asks for the mapper, we will return the instance of our mapper
+
+            //when everyone asks for the container, we will return the instance of our _container
             _container.Instance(_container)
                 .PerRequest<ISaleEndpoint, SaleEndpoint>()
                 .PerRequest<IProductEndpoint, ProductEndpoint>(); // DI will create a new instance of implementing class at every request (not a singleton)

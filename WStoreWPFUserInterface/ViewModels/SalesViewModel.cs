@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using WStoreWPFUserInterface.Library.Api;
 using WStoreWPFUserInterface.Library.Helpers;
 using WStoreWPFUserInterface.Library.Models;
+using WStoreWPFUserInterface.Models;
 
 namespace WStoreWPFUserInterface.ViewModels
 {
@@ -16,12 +18,14 @@ namespace WStoreWPFUserInterface.ViewModels
         private IProductEndpoint _productEndpoint;
         private ISaleEndpoint _saleEndpoint;
         private IConfigHelper _configHelper;
+        private IMapper _mapper;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, ISaleEndpoint saleEndpoint, IConfigHelper configHelper)
+        public SalesViewModel(IProductEndpoint productEndpoint, ISaleEndpoint saleEndpoint, IConfigHelper configHelper, IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _saleEndpoint = saleEndpoint;
             _configHelper = configHelper;
+            _mapper = mapper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -34,12 +38,15 @@ namespace WStoreWPFUserInterface.ViewModels
         {
             // fill the products
             var data = await _productEndpoint.GetAllAsync();
-            Products = new BindingList<ProductModel>(data);
+            // AutoMapper is smart enough and provides the possibility to convert List<ProductModel> => List<ProductDisplayModel>
+            // as well as ProductModel => ProductDisplayModel
+            var products = _mapper.Map<List<ProductDisplayModel>>(data);
+            Products = new BindingList<ProductDisplayModel>(products);
         }
 
-        private BindingList<ProductModel> _products;
+        private BindingList<ProductDisplayModel> _products;
 
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set 
@@ -49,9 +56,9 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
-        private ProductModel _selectedProduct;
+        private ProductDisplayModel _selectedProduct;
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set 
@@ -63,9 +70,9 @@ namespace WStoreWPFUserInterface.ViewModels
         }
 
 
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set
@@ -150,7 +157,7 @@ namespace WStoreWPFUserInterface.ViewModels
         }
         public void AddToCart()
         {
-            CartItemModel existingItem = Cart
+            CartItemDisplayModel existingItem = Cart
                 .FirstOrDefault(x => x.Product?.Id == SelectedProduct?.Id);
 
             if (existingItem != null)
@@ -163,7 +170,7 @@ namespace WStoreWPFUserInterface.ViewModels
             }
             else
             {
-                Cart.Add(new CartItemModel()
+                Cart.Add(new CartItemDisplayModel()
                 {
                     Product = SelectedProduct,
                     QuantityInCart = ItemQuantity,
