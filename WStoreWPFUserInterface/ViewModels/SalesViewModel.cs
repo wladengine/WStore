@@ -68,6 +68,20 @@ namespace WStoreWPFUserInterface.ViewModels
             }
         }
 
+        private async Task ResetSalesViewModel()
+        {
+            // TODO: consider to clearing every structure to reduce memory consumption
+            Cart = new BindingList<CartItemDisplayModel>();
+
+            // TODO add clearing the SelectedCartItem if it does not do it itself
+
+            await LoadProducts();
+            
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+        }
 
         private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
 
@@ -204,7 +218,7 @@ namespace WStoreWPFUserInterface.ViewModels
                 bool output = false;
 
                 //TODO: make sure that smth is selected
-                if (SelectedCartItem != null)
+                if (SelectedCartItem != null && SelectedCartItem.QuantityInCart > 0)
                     output = true;
 
                 return output;
@@ -226,6 +240,7 @@ namespace WStoreWPFUserInterface.ViewModels
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanAddToCart);
         }
 
         public bool CanCheckOut
@@ -256,6 +271,8 @@ namespace WStoreWPFUserInterface.ViewModels
             }
 
             await _saleEndpoint.PostSale(model);
+
+            await ResetSalesViewModel();
         }
     }
 }

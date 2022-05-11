@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Caliburn.Micro;
 using WStoreWPFUserInterface.EventModels;
+using WStoreWPFUserInterface.Library.Models;
 
 namespace WStoreWPFUserInterface.ViewModels
 {
@@ -16,10 +17,12 @@ namespace WStoreWPFUserInterface.ViewModels
         private readonly SalesViewModel _salesVM;
 
         private readonly IEventAggregator _events;
+        private ILoggedInUserModel _loggedInUserModel;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM)
+        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel loggedInUserModel)
         {
             _salesVM = salesVM;
+            _loggedInUserModel = loggedInUserModel;
 
             _events = events;
             _events.SubscribeOnUIThread(this); // activate the subscription in UI thread
@@ -39,6 +42,27 @@ namespace WStoreWPFUserInterface.ViewModels
         public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
             await ActivateItemAsync(_salesVM);
+            NotifyOfPropertyChange(() => IsLoggedIn);
+        }
+
+        public bool IsLoggedIn
+        {
+            get
+            {
+                return !string.IsNullOrWhiteSpace(_loggedInUserModel.Token);
+            }
+        }
+
+        public async Task ExitApplication()
+        {
+            await TryCloseAsync();
+        }
+        public async Task LogOut()
+        {
+            _loggedInUserModel.LogOffUser();
+            await ActivateItemAsync(IoC.Get<LoginViewModel>());
+
+            NotifyOfPropertyChange(() => IsLoggedIn);
         }
     }
 }
