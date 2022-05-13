@@ -14,5 +14,5 @@ BEGIN
 	VALUES
 	(@CashierId, @SaleDate, @SubTotal, @Tax, @Total);
 
-	SELECT @Id = (SELECT @@IDENTITY);
+	SELECT @Id = (SELECT SCOPE_IDENTITY());
 END
