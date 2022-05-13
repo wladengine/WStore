@@ -39,6 +39,11 @@ namespace WStoreWPFUserInterface.Library.Api
             _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        public void LogOffUser()
+        {
+            _apiClient.DefaultRequestHeaders.Clear();
+        }
+
         public async Task<AuthenticatedUser> AuthenticateAsync(string userName, string password)
         {
             var data = new FormUrlEncodedContent(new[]

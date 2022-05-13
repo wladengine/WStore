@@ -9,5 +9,6 @@ namespace WStoreWPFUserInterface.Library.Api
         HttpClient HttpClient { get; }
         Task<AuthenticatedUser> AuthenticateAsync(string userName, string password);
         Task GetLoggedInUserInfo(string token);
+        void LogOffUser();
     }
 }
