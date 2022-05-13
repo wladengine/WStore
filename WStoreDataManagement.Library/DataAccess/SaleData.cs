@@ -17,9 +17,8 @@ namespace WStoreDataManagement.Library.DataAccess
 
             // TODO: create a dependency injection against theese direct dependencies
             ProductData productData = new ProductData();
-            SQLDataAccess sql = new SQLDataAccess();
             var taxRate = ConfigHelper.GetTaxRate();
-
+            
             // Start filling in the models we will save in database
             // 1. Fill the available information 
             List<SaleDetailDBModel> details = new List<SaleDetailDBModel>();
@@ -51,24 +50,39 @@ namespace WStoreDataManagement.Library.DataAccess
                 SubTotal = details.Sum(x => x.PurchasePrice),
                 Tax = details.Sum(x => x.Tax),
                 CashierId = cashierId,
-                
+
             };
 
             sale.Total = sale.SubTotal + sale.Tax;
-            // 3. Save the Sale model
-            
-            sql.SaveData<SaleDBModel>("dbo.spSale_Insert", sale, "WStoreData");
-            // 4. Get ID for Sale model
 
-            sale.Id = sql.LoadData<int, dynamic>("dbo.spSale_GetByCashierIdAndSaleDate", new { sale.CashierId, sale.SaleDate }, "WStoreData")
-                .FirstOrDefault();
-
-            // 5. Finish filling the details of Sale model
-            // And save the sale model details
-            foreach (var item in details)
+            using (SQLDataAccess sql = new SQLDataAccess())
             {
-                item.SaleId = sale.Id;
-                sql.SaveData<SaleDetailDBModel>("dbo.spSaleDetail_Insert", item, "WStoreData");
+                try
+                {
+                    sql.StartTransaction("WStoreData");
+
+                    // 3. Save the Sale model
+                    sql.SaveDataInTransation<SaleDBModel>("dbo.spSale_Insert", sale);
+
+                    // 4. Get ID for Sale model
+                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_GetByCashierIdAndSaleDate", new { sale.CashierId, sale.SaleDate })
+                        .FirstOrDefault();
+
+                    // 5. Finish filling the details of Sale model
+                    // And save the sale model details
+                    foreach (var item in details)
+                    {
+                        item.SaleId = sale.Id;
+                        sql.SaveDataInTransation<SaleDetailDBModel>("dbo.spSaleDetail_Insert", item);
+                    }
+
+                    sql.CommitTransaction();
+                }
+                catch
+                {
+                    sql.RollbackTransaction();
+                    throw;
+                }
             }
         }
     }

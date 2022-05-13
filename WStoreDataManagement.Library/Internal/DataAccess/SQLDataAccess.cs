@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WStoreDataManagement.Library.Internal.DataAccess
 {
-    internal class SQLDataAccess
+    internal class SQLDataAccess : IDisposable
     {
         public string GetConnectionString(string connectionStringName)
         {
@@ -39,6 +39,57 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
                 conn.Execute(storedProcedure, parameters,
                     commandType: CommandType.StoredProcedure);
             }
+        }
+
+        public List<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters)
+        {
+            if (_dbTransaction != null && _dbConnection != null)
+            {
+                List<T> rows = _dbConnection.Query<T>(storedProcedure, parameters,
+                    commandType: CommandType.StoredProcedure,
+                    transaction: _dbTransaction).ToList();
+
+                return rows;
+            }
+            else
+                throw new NullReferenceException("Transaction is not opened");
+        }
+        public void SaveDataInTransation<T>(string storedProcedure, T parameters)
+        {
+            if (_dbTransaction != null && _dbConnection != null)
+            {
+                _dbConnection.Execute(storedProcedure, parameters,
+                    commandType: CommandType.StoredProcedure, transaction: _dbTransaction);
+            }
+        }
+
+        public IDbConnection _dbConnection { get; set; }
+        public IDbTransaction _dbTransaction { get; set; }
+        public void StartTransaction(string connectionStringName)
+        {
+            string connetionString = GetConnectionString(connectionStringName);
+
+            _dbConnection = new SqlConnection(connetionString);
+            _dbConnection.Open();
+
+            _dbTransaction = _dbConnection.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            _dbTransaction?.Commit();
+            _dbConnection?.Close();
+        }
+
+        public void RollbackTransaction()
+        {
+            _dbTransaction?.Rollback();
+            _dbConnection?.Close();
+        }
+
+        public void Dispose()
+        {
+            CommitTransaction();
         }
     }
 }
