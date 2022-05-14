@@ -54,6 +54,7 @@ namespace WStoreWPFUserInterface
             //when everyone asks for the container, we will return the instance of our _container
             _container.Instance(_container)
                 .PerRequest<ISaleEndpoint, SaleEndpoint>()
+                .PerRequest<IUserEndpoint, UserEndpoint>()
                 .PerRequest<IProductEndpoint, ProductEndpoint>(); // DI will create a new instance of implementing class at every request (not a singleton)
 
             //it's kind of little bit meta

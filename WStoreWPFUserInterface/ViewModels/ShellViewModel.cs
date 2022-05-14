@@ -70,5 +70,10 @@ namespace WStoreWPFUserInterface.ViewModels
 
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
+
+        public async Task UserManagement()
+        {
+            await ActivateItemAsync(IoC.Get<UserDisplayViewModel>());
+        }
     }
 }
