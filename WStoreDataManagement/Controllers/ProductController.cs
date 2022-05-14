@@ -9,7 +9,7 @@ using WStoreDataManagement.Library.Models;
 
 namespace WStoreDataManagement.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cashier")]
     public class ProductController : ApiController
     {
         public List<ProductModel> Get()

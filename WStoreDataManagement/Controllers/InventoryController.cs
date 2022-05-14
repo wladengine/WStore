@@ -14,6 +14,7 @@ namespace WStoreDataManagement.Controllers
     {
         // GET api/Sale/GetSalesReport
         [Route("GetInventoryData")]
+        [Authorize(Roles="Manager,Admin")]
         public List<InventoryModel> GetInventoryData()
         {
             InventoryData data = new InventoryData();
@@ -21,6 +22,8 @@ namespace WStoreDataManagement.Controllers
             return data.GetInventory();
         }
 
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "WarehouseWorker")]
         public void Post(InventoryModel model)
         {
             InventoryData data = new InventoryData();
