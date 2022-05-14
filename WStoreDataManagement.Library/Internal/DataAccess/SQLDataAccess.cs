@@ -65,6 +65,7 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
 
         public IDbConnection _dbConnection { get; set; }
         public IDbTransaction _dbTransaction { get; set; }
+        private bool _dbTransactionIsClosed = false;
         public void StartTransaction(string connectionStringName)
         {
             string connetionString = GetConnectionString(connectionStringName);
@@ -73,23 +74,42 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
             _dbConnection.Open();
 
             _dbTransaction = _dbConnection.BeginTransaction();
+
+            _dbTransactionIsClosed = false;
         }
 
         public void CommitTransaction()
         {
             _dbTransaction?.Commit();
             _dbConnection?.Close();
+
+            _dbTransactionIsClosed = true;
         }
 
         public void RollbackTransaction()
         {
             _dbTransaction?.Rollback();
             _dbConnection?.Close();
+
+            _dbTransactionIsClosed = true;
         }
 
         public void Dispose()
         {
-            CommitTransaction();
+            if (!_dbTransactionIsClosed)
+            {
+                try
+                {
+                    CommitTransaction();
+                }
+                catch
+                {
+                    // TODO: log this exception
+                }
+            }
+                
+
+
         }
     }
 }
