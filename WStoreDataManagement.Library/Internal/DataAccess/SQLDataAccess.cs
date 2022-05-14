@@ -107,9 +107,6 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
                     // TODO: log this exception
                 }
             }
-                
-
-
         }
     }
 }

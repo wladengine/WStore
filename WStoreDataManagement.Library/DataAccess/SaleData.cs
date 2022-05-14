@@ -85,5 +85,15 @@ namespace WStoreDataManagement.Library.DataAccess
                 }
             }
         }
+
+        public List<SaleReportModel> GetSaleReport()
+        {
+            using (SQLDataAccess sql = new SQLDataAccess())
+            {
+                var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "WStoreData");
+
+                return output;
+            }
+        }
     }
 }

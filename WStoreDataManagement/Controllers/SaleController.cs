@@ -22,5 +22,14 @@ namespace WStoreDataManagement.Controllers
 
             data.SaveSale(model, userId);
         }
+
+        // GET api/Sale/GetSalesReport
+        [Route("GetSalesReport")]
+        public List<SaleReportModel> GetSalesReport()
+        {
+            SaleData data = new SaleData();
+
+            return data.GetSaleReport();
+        }
     }
 }
