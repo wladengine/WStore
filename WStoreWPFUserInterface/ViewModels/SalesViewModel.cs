@@ -3,9 +3,11 @@ using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using WStoreWPFUserInterface.Library.Api;
 using WStoreWPFUserInterface.Library.Helpers;
 using WStoreWPFUserInterface.Library.Models;
@@ -20,18 +22,54 @@ namespace WStoreWPFUserInterface.ViewModels
         private IConfigHelper _configHelper;
         private IMapper _mapper;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, ISaleEndpoint saleEndpoint, IConfigHelper configHelper, IMapper mapper)
+        private StatusInfoViewModel _statusInfo;
+        private IWindowManager _manager;
+
+        public SalesViewModel(IProductEndpoint productEndpoint, ISaleEndpoint saleEndpoint, IConfigHelper configHelper, 
+            IMapper mapper, StatusInfoViewModel statusInfo, IWindowManager manager)
         {
             _productEndpoint = productEndpoint;
             _saleEndpoint = saleEndpoint;
             _configHelper = configHelper;
             _mapper = mapper;
+
+            _statusInfo = statusInfo;
+            _manager = manager;
         }
 
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            await LoadProducts();
+            try
+            {
+                await LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                // smth from the bottom of .NET
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "System Error";
+
+                if (ex.Message == "Unathorized")
+                {
+                    var info = IoC.Get<StatusInfoViewModel>();
+
+                    info.UpdateMessage("Unathorized Access", "Not permitted");
+                    await _manager.ShowDialogAsync(info, settings: settings);
+                }
+                else
+                {
+                    var info = IoC.Get<StatusInfoViewModel>();
+
+                    info.UpdateMessage("Fatal exception", ex.Message);
+                    await _manager.ShowDialogAsync(info, settings: settings);
+                }
+
+                
+                await TryCloseAsync();
+            }
         }
 
         private async Task LoadProducts()
