@@ -29,7 +29,7 @@ namespace WStoreWPFUserInterface.ViewModels
             _apiHelper = apiHelper;
 
             _events = events;
-            _events.SubscribeOnUIThread(this); // activate the subscription in UI thread
+            _events.SubscribeOnPublishedThread(this); // activate the subscription in our thread
         }
 
         protected override async void OnViewLoaded(object view)
