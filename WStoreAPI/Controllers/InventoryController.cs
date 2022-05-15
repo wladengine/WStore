@@ -20,8 +20,7 @@ namespace WStoreAPI.Controllers
             _configuration = configuration;
         }
 
-        // GET api/Sale/GetSalesReport
-        [Route("GetInventoryData")]
+        [HttpGet]
         [Authorize(Roles = "Manager,Admin")]
         public List<InventoryModel> GetInventoryData()
         {
@@ -30,6 +29,7 @@ namespace WStoreAPI.Controllers
             return data.GetInventory();
         }
 
+        [HttpPost]
         [Authorize(Roles = "Admin")]
         [Authorize(Roles = "WarehouseWorker")]
         public void Post(InventoryModel model)

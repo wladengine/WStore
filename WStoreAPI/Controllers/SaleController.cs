@@ -21,6 +21,7 @@ namespace WStoreAPI.Controllers
             _configuration = configuration;
         }
 
+        [HttpPost]
         [Authorize(Roles = "Cashier")]
         public void Post(SaleModel model)
         {
@@ -32,6 +33,7 @@ namespace WStoreAPI.Controllers
         }
 
         // GET api/Sale/GetSalesReport
+        [HttpGet]
         [Authorize(Roles = "Manager,Admin")]
         [Route("GetSalesReport")]
         public List<SaleReportModel> GetSalesReport()

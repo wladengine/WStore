@@ -19,6 +19,8 @@ namespace WStoreAPI.Controllers
         {
             _configuration = configuration;
         }
+
+        [HttpGet]
         public List<ProductModel> Get()
         {
             //TODO: make a DI against the direct dependency
