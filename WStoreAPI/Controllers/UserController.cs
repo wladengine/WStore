@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -22,11 +23,13 @@ namespace WStoreAPI.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
+        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         // GET: User/Details/5
@@ -36,7 +39,7 @@ namespace WStoreAPI.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //new way to get the user principal id
 
             //TODO: make a DI against the direct dependency
-            UserData data = new UserData();
+            UserData data = new UserData(_configuration);
 
             var output = data.GetUserById(userId).First();
 

@@ -1,5 +1,4 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -7,14 +6,22 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace WStoreDataManagement.Library.Internal.DataAccess
 {
     internal class SQLDataAccess : IDisposable
     {
+        private readonly IConfiguration _configuration;
+        public SQLDataAccess(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public string GetConnectionString(string connectionStringName)
         {
-            return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+            return _configuration.GetConnectionString(connectionStringName);
         }
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
@@ -66,6 +73,8 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
         public IDbConnection _dbConnection { get; set; }
         public IDbTransaction _dbTransaction { get; set; }
         private bool _dbTransactionIsClosed = false;
+        
+
         public void StartTransaction(string connectionStringName)
         {
             string connetionString = GetConnectionString(connectionStringName);

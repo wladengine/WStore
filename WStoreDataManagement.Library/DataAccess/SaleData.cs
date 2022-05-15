@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,13 +11,19 @@ namespace WStoreDataManagement.Library.DataAccess
 {
     public class SaleData
     {
+        private readonly IConfiguration _configuration;
+        public SaleData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             // TODO: make it more SOLID (just separate pieces of logic)
             // TODO: create a dependency injection against theese direct dependencies
 
             // TODO: create a dependency injection against theese direct dependencies
-            ProductData productData = new ProductData();
+            ProductData productData = new ProductData(_configuration);
             var taxRate = ConfigHelper.GetTaxRate();
             
             // Start filling in the models we will save in database
@@ -55,7 +62,7 @@ namespace WStoreDataManagement.Library.DataAccess
 
             sale.Total = sale.SubTotal + sale.Tax;
 
-            using (SQLDataAccess sql = new SQLDataAccess())
+            using (SQLDataAccess sql = new SQLDataAccess(_configuration))
             {
                 try
                 {
@@ -88,7 +95,7 @@ namespace WStoreDataManagement.Library.DataAccess
 
         public List<SaleReportModel> GetSaleReport()
         {
-            using (SQLDataAccess sql = new SQLDataAccess())
+            using (SQLDataAccess sql = new SQLDataAccess(_configuration))
             {
                 var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "WStoreData");
 

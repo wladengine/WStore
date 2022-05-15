@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,16 @@ namespace WStoreDataManagement.Library.DataAccess
 {
     public class InventoryData
     {
+        private readonly IConfiguration _configuration;
+
+        public InventoryData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public List<InventoryModel> GetInventory()
         {
-            SQLDataAccess sql = new SQLDataAccess();
+            SQLDataAccess sql = new SQLDataAccess(_configuration);
 
             var output = sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "WStoreData");
 
@@ -21,7 +29,7 @@ namespace WStoreDataManagement.Library.DataAccess
 
         public void SaveInventoryRecord(InventoryModel model)
         {
-            SQLDataAccess sql = new SQLDataAccess();
+            SQLDataAccess sql = new SQLDataAccess(_configuration);
 
             sql.SaveData("dbo.spInventory_Insert", model, "WStoreData");
         }
