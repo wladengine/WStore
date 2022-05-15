@@ -15,16 +15,13 @@ namespace WStoreWPFUserInterface.ViewModels
     public class ShellViewModel : Conductor<object>, 
         IHandle<LogOnEvent> // we subscribing to handle any LogOnEvent and make some work
     {
-        private readonly SalesViewModel _salesVM;
-
         private readonly IEventAggregator _events;
         private IAPIHelper _apiHelper;
         private ILoggedInUserModel _loggedInUserModel;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel loggedInUserModel,
+        public ShellViewModel(IEventAggregator events, ILoggedInUserModel loggedInUserModel,
             IAPIHelper apiHelper)
         {
-            _salesVM = salesVM;
             _loggedInUserModel = loggedInUserModel;
             _apiHelper = apiHelper;
 
@@ -45,7 +42,7 @@ namespace WStoreWPFUserInterface.ViewModels
 
         public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
-            await ActivateItemAsync(_salesVM);
+            await ActivateItemAsync(IoC.Get<SalesViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
 
