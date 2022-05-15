@@ -13,20 +13,17 @@ namespace WStoreAPI.Controllers
     [Authorize(Roles = "Cashier")]
     public class ProductController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IProductData _data;
 
-        public ProductController(IConfiguration configuration)
+        public ProductController(IProductData data)
         {
-            _configuration = configuration;
+            _data = data;
         }
 
         [HttpGet]
         public List<ProductModel> Get()
         {
-            //TODO: make a DI against the direct dependency
-            ProductData data = new ProductData(_configuration);
-
-            var output = data.GetProducts();
+            var output = _data.GetProducts();
 
             return output;
         }

@@ -9,30 +9,24 @@ using WStoreDataManagement.Library.Models;
 
 namespace WStoreDataManagement.Library.DataAccess
 {
-    public class ProductData
+    public class ProductData : IProductData
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISQLDataAccess _sql;
 
-        public ProductData(IConfiguration configuration)
+        public ProductData(ISQLDataAccess sql)
         {
-            _configuration = configuration;
+            _sql = sql;
         }
         public List<ProductModel> GetProducts()
         {
-            //TODO: create a dependency injection against theese direct dependencies
-            SQLDataAccess sql = new SQLDataAccess(_configuration);
-
-            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "WStoreData");
+            var output = _sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "WStoreData");
 
             return output;
         }
 
         public ProductModel GetProductById(int productId)
         {
-            //TODO: create a dependency injection against theese direct dependencies
-            SQLDataAccess sql = new SQLDataAccess(_configuration);
-
-            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "WStoreData")
+            var output = _sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "WStoreData")
                 .FirstOrDefault();
 
             return output;

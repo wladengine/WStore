@@ -9,23 +9,18 @@ using WStoreDataManagement.Library.Models;
 
 namespace WStoreDataManagement.Library.DataAccess
 {
-    public class UserData
+    public class UserData : IUserData
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISQLDataAccess _sql;
 
-        public UserData(IConfiguration configuration)
+        public UserData(ISQLDataAccess sql)
         {
-            _configuration = configuration;
+            _sql = sql;
         }
         public List<UserModel> GetUserById(string Id)
         {
-            //TODO: create a dependency injection against theese direct dependencies
-            SQLDataAccess sql = new SQLDataAccess(_configuration);
+            var output = _sql.LoadData<UserModel, dynamic>("dbo.spUserLookup", new { Id }, "WStoreData");
 
-            var p = new { Id = Id };
-
-            var output = sql.LoadData<UserModel, dynamic>("dbo.spUserLookup", p, "WStoreData");
-            
             return output;
         }
     }

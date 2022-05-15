@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace WStoreDataManagement.Library.Internal.DataAccess
 {
-    internal class SQLDataAccess : IDisposable
+    public class SQLDataAccess : IDisposable, ISQLDataAccess
     {
         private readonly IConfiguration _configuration;
         public SQLDataAccess(IConfiguration configuration)
@@ -30,7 +30,7 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
 
             using (IDbConnection conn = new SqlConnection(connetionString))
             {
-                List<T> rows = conn.Query<T>(storedProcedure, parameters, 
+                List<T> rows = conn.Query<T>(storedProcedure, parameters,
                     commandType: CommandType.StoredProcedure).ToList();
 
                 return rows;
@@ -73,7 +73,7 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
         public IDbConnection _dbConnection { get; set; }
         public IDbTransaction _dbTransaction { get; set; }
         private bool _dbTransactionIsClosed = false;
-        
+
 
         public void StartTransaction(string connectionStringName)
         {

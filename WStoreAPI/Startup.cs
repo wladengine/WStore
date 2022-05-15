@@ -16,6 +16,8 @@ using WStoreAPI.Data;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using WStoreDataManagement.Library.DataAccess;
+using WStoreDataManagement.Library.Internal.DataAccess;
 
 namespace WStoreAPI
 {
@@ -39,6 +41,13 @@ namespace WStoreAPI
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            // Register our services
+            services.AddTransient<IInventoryData, InventoryData>();
+            services.AddTransient<IProductData, ProductData>();
+            services.AddTransient<ISaleData, SaleData>();
+            services.AddTransient<IUserData, UserData>();
+            services.AddTransient<ISQLDataAccess, SQLDataAccess>();
 
             services.AddAuthentication(options =>
             {

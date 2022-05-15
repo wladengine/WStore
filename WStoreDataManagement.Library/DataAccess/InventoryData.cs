@@ -9,29 +9,27 @@ using WStoreDataManagement.Library.Models;
 
 namespace WStoreDataManagement.Library.DataAccess
 {
-    public class InventoryData
+    public class InventoryData : IInventoryData
     {
         private readonly IConfiguration _configuration;
+        private readonly ISQLDataAccess _sql;
 
-        public InventoryData(IConfiguration configuration)
+        public InventoryData(IConfiguration configuration, ISQLDataAccess sql)
         {
             _configuration = configuration;
+            _sql = sql;
         }
 
         public List<InventoryModel> GetInventory()
         {
-            SQLDataAccess sql = new SQLDataAccess(_configuration);
-
-            var output = sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "WStoreData");
+            var output = _sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "WStoreData");
 
             return output;
         }
 
         public void SaveInventoryRecord(InventoryModel model)
         {
-            SQLDataAccess sql = new SQLDataAccess(_configuration);
-
-            sql.SaveData("dbo.spInventory_Insert", model, "WStoreData");
+            _sql.SaveData("dbo.spInventory_Insert", model, "WStoreData");
         }
     }
 }

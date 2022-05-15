@@ -9,23 +9,21 @@ using WStoreDataManagement.Library.Models;
 
 namespace WStoreDataManagement.Library.DataAccess
 {
-    public class SaleData
+    public class SaleData : ISaleData
     {
-        private readonly IConfiguration _configuration;
-        public SaleData(IConfiguration configuration)
+        private readonly IProductData _productData;
+        private readonly ISQLDataAccess _sql;
+
+        public SaleData(IProductData productData, ISQLDataAccess sql)
         {
-            _configuration = configuration;
+            _productData = productData;
+            _sql = sql;
         }
 
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
-            // TODO: make it more SOLID (just separate pieces of logic)
-            // TODO: create a dependency injection against theese direct dependencies
-
-            // TODO: create a dependency injection against theese direct dependencies
-            ProductData productData = new ProductData(_configuration);
             var taxRate = ConfigHelper.GetTaxRate();
-            
+
             // Start filling in the models we will save in database
             // 1. Fill the available information 
             List<SaleDetailDBModel> details = new List<SaleDetailDBModel>();
@@ -38,7 +36,7 @@ namespace WStoreDataManagement.Library.DataAccess
                 };
 
                 // Get the actual information about this ProductId
-                var ProductInfo = productData.GetProductById(item.ProductId);
+                var ProductInfo = _productData.GetProductById(item.ProductId);
                 if (ProductInfo == null)
                 {
                     throw new Exception($"The product with the Id = {item.ProductId} not found in database");
@@ -62,45 +60,39 @@ namespace WStoreDataManagement.Library.DataAccess
 
             sale.Total = sale.SubTotal + sale.Tax;
 
-            using (SQLDataAccess sql = new SQLDataAccess(_configuration))
+            try
             {
-                try
+                _sql.StartTransaction("WStoreData");
+
+                // 3. Save the Sale model
+                _sql.SaveDataInTransation<SaleDBModel>("dbo.spSale_Insert", sale);
+
+                // 4. Get ID for Sale model
+                sale.Id = _sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_GetByCashierIdAndSaleDate", new { sale.CashierId, sale.SaleDate })
+                    .FirstOrDefault();
+
+                // 5. Finish filling the details of Sale model
+                // And save the sale model details
+                foreach (var item in details)
                 {
-                    sql.StartTransaction("WStoreData");
-
-                    // 3. Save the Sale model
-                    sql.SaveDataInTransation<SaleDBModel>("dbo.spSale_Insert", sale);
-
-                    // 4. Get ID for Sale model
-                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_GetByCashierIdAndSaleDate", new { sale.CashierId, sale.SaleDate })
-                        .FirstOrDefault();
-
-                    // 5. Finish filling the details of Sale model
-                    // And save the sale model details
-                    foreach (var item in details)
-                    {
-                        item.SaleId = sale.Id;
-                        sql.SaveDataInTransation<SaleDetailDBModel>("dbo.spSaleDetail_Insert", item);
-                    }
-
-                    sql.CommitTransaction();
+                    item.SaleId = sale.Id;
+                    _sql.SaveDataInTransation<SaleDetailDBModel>("dbo.spSaleDetail_Insert", item);
                 }
-                catch
-                {
-                    sql.RollbackTransaction();
-                    throw;
-                }
+
+                _sql.CommitTransaction();
+            }
+            catch
+            {
+                _sql.RollbackTransaction();
+                throw;
             }
         }
 
         public List<SaleReportModel> GetSaleReport()
         {
-            using (SQLDataAccess sql = new SQLDataAccess(_configuration))
-            {
-                var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "WStoreData");
+            var output = _sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "WStoreData");
 
-                return output;
-            }
+            return output;
         }
     }
 }

@@ -23,25 +23,22 @@ namespace WStoreAPI.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _configuration;
+        private readonly IUserData _userData;
 
-        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IUserData userData)
         {
             _dbContext = dbContext;
             _userManager = userManager;
-            _configuration = configuration;
+            _userData = userData;
         }
 
-        // GET: User/Details/5
+        // GET: User/GetById/
         [HttpGet]
         public UserModel GetById()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //new way to get the user principal id
 
-            //TODO: make a DI against the direct dependency
-            UserData data = new UserData(_configuration);
-
-            var output = data.GetUserById(userId).First();
+            var output = _userData.GetUserById(userId).First();
 
             return output;
         }

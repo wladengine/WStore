@@ -13,20 +13,18 @@ namespace WStoreAPI.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IInventoryData _inventoryData;
 
-        public InventoryController(IConfiguration configuration)
+        public InventoryController(IInventoryData inventoryData)
         {
-            _configuration = configuration;
+            _inventoryData = inventoryData;
         }
 
         [HttpGet]
         [Authorize(Roles = "Manager,Admin")]
         public List<InventoryModel> GetInventoryData()
         {
-            InventoryData data = new InventoryData(_configuration);
-
-            return data.GetInventory();
+            return _inventoryData.GetInventory();
         }
 
         [HttpPost]
@@ -34,8 +32,7 @@ namespace WStoreAPI.Controllers
         [Authorize(Roles = "WarehouseWorker")]
         public void Post(InventoryModel model)
         {
-            InventoryData data = new InventoryData(_configuration);
-            data.SaveInventoryRecord(model);
+            _inventoryData.SaveInventoryRecord(model);
         }
     }
 }
