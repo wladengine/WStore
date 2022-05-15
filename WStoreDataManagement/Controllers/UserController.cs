@@ -53,7 +53,7 @@ namespace WStoreDataManagement.Controllers
                 {
                     ApplicationUserModel model = new ApplicationUserModel()
                     {
-                        Id = user.Id,
+                        UserId = user.Id,
                         Email = user.Email,
                         Roles = user.Roles.ToDictionary(k => k.RoleId, v => roles.First(x => x.Id == v.RoleId).Name),
                     };
@@ -62,6 +62,47 @@ namespace WStoreDataManagement.Controllers
                 }
 
                 return output;
+            }
+        }
+
+        // GET api/User/Admin/GetAllRoles
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("Admin/GetAllRoles")]
+        public Dictionary<string, string> GetAllRoles()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var roles = context.Roles.ToDictionary(k => k.Id, v => v.Name);
+                return roles;
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("Admin/AddRoleToUser")]
+        public void AddRoleToUser(UserRolePairModel model)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+
+                userManager.AddToRole(model.UserId, model.RoleName);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("Admin/RemoveRoleFromUser")]
+        public void RemoveRoleFromUser(UserRolePairModel model)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+
+                userManager.RemoveFromRole(model.UserId, model.RoleName);
             }
         }
     }

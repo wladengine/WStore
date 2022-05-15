@@ -20,6 +20,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WStoreDataManagement.Librar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WStoreWPFUserInterface.Library", "WStoreWPFUserInterface.Library\WStoreWPFUserInterface.Library.csproj", "{CF2FEB15-400F-416F-9A2D-C17277F5D1F1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{59BE9E4E-94F8-493E-A37C-DF7BB0AE12B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{60E03855-26AB-462A-B674-B261C68D3FEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{BF1F5102-DA91-492F-869C-FFC47DA35BDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +57,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F836D0C4-8088-4FA4-A95D-AC1DFB96776E} = {60E03855-26AB-462A-B674-B261C68D3FEB}
+		{093C31F8-620F-4E08-9564-A662AE604BFB} = {59BE9E4E-94F8-493E-A37C-DF7BB0AE12B1}
+		{457C791C-3D68-427F-B553-A3D50290AB76} = {BF1F5102-DA91-492F-869C-FFC47DA35BDD}
+		{46539D41-7494-4F2A-B04E-B9AB560BA392} = {60E03855-26AB-462A-B674-B261C68D3FEB}
+		{CF2FEB15-400F-416F-9A2D-C17277F5D1F1} = {BF1F5102-DA91-492F-869C-FFC47DA35BDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05FCB84E-9D85-435B-8383-48006F54BB52}

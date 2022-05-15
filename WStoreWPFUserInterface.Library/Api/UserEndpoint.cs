@@ -31,5 +31,43 @@ namespace WStoreWPFUserInterface.Library.Api
                 }
             }
         }
+
+        public async Task<Dictionary<string, string>> GetAllRolesAsync()
+        {
+            using (HttpResponseMessage message = await _apiHelper.HttpClient.GetAsync("/api/User/Admin/GetAllRoles"))
+            {
+                if (message.IsSuccessStatusCode)
+                {
+                    var response = await message.Content.ReadAsAsync<Dictionary<string, string>>();
+                    return response;
+                }
+                else
+                {
+                    throw new Exception(message.ReasonPhrase);
+                }
+            }
+        }
+
+        public async Task AddUserToRole(string userId, string roleName)
+        {
+            var data = new { userId, roleName };
+            using (HttpResponseMessage message = 
+                await _apiHelper.HttpClient.PostAsJsonAsync("/api/User/Admin/AddRoleToUser", data))
+            {
+                if (!message.IsSuccessStatusCode)
+                    throw new Exception(message.ReasonPhrase);
+            }
+        }
+
+        public async Task RemoveUserFromRole(string userId, string roleName)
+        {
+            var data = new { userId, roleName };
+            using (HttpResponseMessage message =
+                await _apiHelper.HttpClient.PostAsJsonAsync("/api/User/Admin/RemoveRoleFromUser", data))
+            {
+                if (!message.IsSuccessStatusCode)
+                    throw new Exception(message.ReasonPhrase);
+            }
+        }
     }
 }
