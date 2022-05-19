@@ -58,7 +58,7 @@ namespace WStoreAPI
                 jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Some_very_secret_key")),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("Secrets:SecurityKey"))),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
