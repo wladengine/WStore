@@ -8,15 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace WStoreDataManagement.Library.Internal.DataAccess
 {
     public class SQLDataAccess : IDisposable, ISQLDataAccess
     {
         private readonly IConfiguration _configuration;
-        public SQLDataAccess(IConfiguration configuration)
+        private readonly ILogger<SQLDataAccess> _logger;
+
+        public SQLDataAccess(IConfiguration configuration, ILogger<SQLDataAccess> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public string GetConnectionString(string connectionStringName)
@@ -111,9 +115,9 @@ namespace WStoreDataManagement.Library.Internal.DataAccess
                 {
                     CommitTransaction();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // TODO: log this exception
+                    _logger.LogError(ex, "Error while Dispose() for transaction");
                 }
             }
         }

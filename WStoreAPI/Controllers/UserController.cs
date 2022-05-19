@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -24,17 +25,24 @@ namespace WStoreAPI.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserData _userData;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IUserData userData)
+        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IUserData userData, ILogger<UserController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _userData = userData;
+            _logger = logger;
         }
 
         // GET: User/GetById/
         [HttpGet]
         public UserModel GetById()
+        {
+            return GetUserModelById();
+        }
+
+        private UserModel GetUserModelById()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //new way to get the user principal id
 
@@ -94,7 +102,13 @@ namespace WStoreAPI.Controllers
         [Route("Admin/AddRoleToUser")]
         public async Task AddRoleToUser(UserRolePairModel model)
         {
+            var adminUserModel = GetUserModelById();
+
             var usr = await _userManager.FindByIdAsync(model.UserId);
+
+            _logger.LogInformation("Admin {Admin} (id={AdminId}) added user {User} (id = {UserId}) to role {Role}", 
+                adminUserModel.EmailAddress, adminUserModel.Id, usr.Email, usr.Id, model.RoleName);
+
             await _userManager.AddToRoleAsync(usr, model.RoleName);
         }
 
@@ -103,7 +117,13 @@ namespace WStoreAPI.Controllers
         [Route("Admin/RemoveRoleFromUser")]
         public async Task RemoveRoleFromUser(UserRolePairModel model)
         {
+            var adminUserModel = GetUserModelById();
+
             var usr = await _userManager.FindByIdAsync(model.UserId);
+
+            _logger.LogInformation("Admin {Admin} (id={AdminId}) removerd user {User} (id = {UserId}) from role {Role}",
+                adminUserModel.EmailAddress, adminUserModel.Id, usr.Email, usr.Id, model.RoleName);
+
             await _userManager.RemoveFromRoleAsync(usr, model.RoleName);
         }
     }
